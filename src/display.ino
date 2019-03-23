@@ -43,6 +43,14 @@ String dateTime(String timestamp)
   return String(buff);
 }
 
+String dateDay(String timestamp)
+{
+  time_t ts = timestamp.toInt();
+  char buff[30];
+  sprintf(buff, "%02d-%02d-%4d", day(ts), month(ts), year(ts));
+  return String(buff);
+}
+
 // create ticker
 Ticker display_ticker;
 
@@ -118,28 +126,89 @@ void setup()
   WF_status = W_TRY;
 }
 
-void currentConditions(void)
+class FCastDay
 {
-  OWM_conditions *ow_cond = new OWM_conditions;
-  owCC.updateConditions(ow_cond, ow_key, "de", "koeln", "metric");
-  Serial.println("icon: " + ow_cond->icon + ", temp.: " + ow_cond->temp + ", " + ow_cond->description);
-  text(1, 5, "Temp.: " + ow_cond->temp + "C", display.color565(96, 96, 250));
-  delete ow_cond;
-}
+public:
+  String dt;
+  String min_temp;
+  String min_icon;
+  String max_temp;
+  String max_icon;
+};
 
 void fiveDayFcast(void)
 {
-  OWM_fiveForecast *ow_fcast5 = new OWM_fiveForecast[20];
-  byte entries = owF5.updateForecast(ow_fcast5, 20, ow_key, "de", "koeln", "metric");
+  text(1, 12, "Forecast:", display.color565(96, 96, 250));
+  // todo: it is not possible to display text in the next block for some reasons
+  OWM_fiveForecast *ow_fcast5 = new OWM_fiveForecast[24];
+  byte entries = owF5.updateForecast(ow_fcast5, 24, ow_key, "de", "koeln", "metric");
   Serial.print("Entries: ");
   Serial.println(entries + 1);
+
+  String lastDay = "none";
+  float maxTemp = 0.0;
+  float minTemp = 0.0;
+  String maxTempIcon = "none";
+  String minTempIcon = "none";
+  int checkedDays = 0;
+
+  FCastDay fcastDays[3];
+
   for (byte i = 0; i <= entries; ++i)
   {
-    Serial.print(dateTime(ow_fcast5[i].dt));
-    Serial.print(", temp.: " + ow_fcast5[i].temp);
-    Serial.println(", descr.: " + ow_fcast5[i].description);
+    String day = dateDay(ow_fcast5[i].dt);
+    float fcastTemp = ow_fcast5[i].temp.toFloat();
+
+    if (fcastTemp < minTemp || minTempIcon == "none")
+    {
+      minTemp = fcastTemp;
+      minTempIcon = ow_fcast5[i].icon;
+    }
+
+    if (fcastTemp > maxTemp || maxTempIcon == "none")
+    {
+      maxTemp = fcastTemp;
+      maxTempIcon = ow_fcast5[i].icon;
+    }
+
+    if (lastDay != day)
+    {
+      if (lastDay != "none")
+      {
+        fcastDays[checkedDays].dt = day;
+        fcastDays[checkedDays].min_temp = minTemp;
+        fcastDays[checkedDays].max_temp = maxTemp;
+        fcastDays[checkedDays].min_icon = minTempIcon;
+        fcastDays[checkedDays].max_icon = maxTempIcon;
+
+        // increase counter and reset values
+        checkedDays++;
+        maxTemp = 0.0;
+        minTemp = 0.0;
+        maxTempIcon = "none";
+        minTempIcon = "none";
+
+        // break loop after 3 entries
+        if (checkedDays > 2)
+          break;
+      }
+      lastDay = day;
+    }
   }
+
+  for (byte j = 0; j <= 3; j++)
+  {
+    String line = fcastDays[j].dt + " " + fcastDays[j].min_temp + " " + fcastDays[j].max_temp;
+    Serial.println(line);
+    // todo: displaying text here does not work
+  }
+
   delete[] ow_fcast5;
+}
+
+void test(void)
+{
+  text(1, 20, "test", display.color565(96, 96, 250));
 }
 
 void loop()
@@ -150,8 +219,6 @@ void loop()
     {
       MDNS.begin(nodename);
       WF_status = W_READY;
-      Serial.println("Current Conditions: ");
-      currentConditions();
       Serial.println("Five days forecast: ");
       fiveDayFcast();
     }

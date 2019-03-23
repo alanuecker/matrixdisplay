@@ -52,7 +52,7 @@ typedef struct sOWM_fiveForecast
 {
   String dt;
   String temp;
-  String description;
+  String icon;
 } OWM_fiveForecast;
 
 class OWMfiveForecast : public OWMrequest

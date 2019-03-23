@@ -116,7 +116,7 @@ void OWMfiveForecast::value(String value) {
   if (currentKey == "temp") {
     forecasts[index].temp = value;
   } else
-  if (currentParent == "weather" && currentKey == "description") {
-    forecasts[index].description = value;
+  if (currentParent == "weather" && currentKey == "icon") {
+    forecasts[index].icon = value;
   }
 }
