@@ -49,6 +49,3 @@ PI --> ESP8266
 |P_OE|D4|
 |CLK|D5|
 |R1|D7|
-
-## Problems: 
-I still need to figure out why the data is not displayed correctly.
