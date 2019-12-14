@@ -9,10 +9,10 @@
                 "/Users/alanuecker/Documents/Arduino/libraries/ArduinoJson/src",
                 "/Users/alanuecker/Documents/Arduino/libraries/Adafruit_GFX_Library",
                 "/Users/alanuecker/Documents/Arduino/libraries/PxMatrix-master",
-                "/Users/alanuecker/Documents/Arduino/libraries/json-streamin-parser-master",
                 "/Users/alanuecker/Library/Arduino15/packages/esp8266/tools/**",
                 "/Users/alanuecker/Library/Arduino15/packages/esp8266/hardware/esp8266/2.5.0-beta2/**",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/Users/alanuecker/Library/Arduino15/packages/esp8266/hardware/esp8266/2.6.2/**"
             ],
             "defines": [
                 "_DEBUG"

@@ -1,7 +1,7 @@
 {
-    "port": "/dev/cu.wchusbserial1480",
-    "board": "esp8266:esp8266:nodemcuv2",
-    "configuration": "xtal=160,vt=flash,exception=enabled,eesz=4M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
+    "port": "/dev/cu.usbserial-14440",
+    "board": "esp8266:esp8266:generic",
+    "configuration": "xtal=160,vt=flash,exception=legacy,ssl=all,ResetMethod=nodemcu,CrystalFreq=26,FlashFreq=40,FlashMode=dio,eesz=512K64,led=2,sdk=nonosdk_190703,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
     "sketch": "src/display.ino",
     "output": "../build"
 }

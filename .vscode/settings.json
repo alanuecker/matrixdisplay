@@ -4,6 +4,7 @@
     "vector": "cpp",
     "string": "cpp",
     "string_view": "cpp",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "filesystem": "cpp"
   }
 }
