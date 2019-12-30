@@ -1,5 +1,6 @@
 #include <map>
 
+// each digit is stored in an 14 by 8 array and the values represent the active pixels
 int zero[14][8] = {
     {1, 1, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 1, 1},

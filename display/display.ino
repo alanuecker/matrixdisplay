@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 
 #include <WiFiClient.h>
@@ -12,16 +13,9 @@
 #include "secrets.h"
 #include "clock.h"
 #include "display.h"
+#include "webserver.h"
 
-typedef enum wifi_s
-{
-  W_AP = 0,
-  W_READY,
-  W_TRY
-} WifiStat;
-
-WifiStat WF_status;
-
+// connect to the given wifi
 void connectWiFiInit(void)
 {
   WiFi.hostname("LEDMatrix");
@@ -30,9 +24,8 @@ void connectWiFiInit(void)
   WiFi.begin(ssid.c_str(), passwd.c_str());
 }
 
+// time zone offset
 const long utcOffsetInSeconds = 3600;
-
-char daysOfTheWeek[7][3] = {"SO", "MO", "DI", "MI", "DO", "FR", "SA"};
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -46,24 +39,23 @@ void setup()
   setupClock();
 
   connectWiFiInit();
-  WF_status = W_TRY;
   timeClient.begin();
+  setupWebserver();
 }
 
 void loop()
 {
-  if (WF_status == W_TRY)
+  loopWebserver();
+
+  if (clockMode)
   {
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      WF_status = W_READY;
-    }
+    timeClient.update();
+    display.clearDisplay();
+    drawClock(timeClient.getHours(), timeClient.getMinutes());
+    delay(500);
   }
-
-  timeClient.update();
-  clearDisplay();
-
-  drawClock(timeClient.getHours(), timeClient.getMinutes());
-
-  delay(500);
+  else
+  {
+    delay(10);
+  }
 }

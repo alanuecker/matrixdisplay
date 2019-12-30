@@ -4,8 +4,8 @@
 #include <PxMatrix.h>
 
 extern PxMATRIX display;
+extern boolean clockMode;
 
-void clearDisplay();
 void setupDisplay();
 uint16_t randomColor();
 

@@ -16,6 +16,9 @@ Ticker display_ticker;
 // create display
 PxMATRIX display(64, 32, P_LAT, P_OE, P_A, P_B, P_C, P_D);
 
+// switch between clock and draw mode
+boolean clockMode = true;
+
 // draw simple text
 void text(uint8_t xpos, uint8_t ypos, String text, uint16_t color)
 {
@@ -24,6 +27,7 @@ void text(uint8_t xpos, uint8_t ypos, String text, uint16_t color)
   display.print(text);
 }
 
+// get a random color
 uint16_t randomColor()
 {
   return display.color565(rand() % 255, rand() % 255, rand() % 255);
@@ -34,19 +38,15 @@ void display_updater()
 {
   // This defines the 'on' time of the display is us. The larger this number,
   // the brighter the display. If too large the ESP will crash
-  display.display(20);
+  display.display(10);
 }
 
+// set display settings
 void setupDisplay()
 {
   display.begin(16);
-  display.setBrightness(50);
+  display.setBrightness(40);
   display.setFastUpdate(true);
   display.clearDisplay();
   display_ticker.attach(0.002, display_updater);
-}
-
-void clearDisplay()
-{
-  display.clearDisplay();
 }

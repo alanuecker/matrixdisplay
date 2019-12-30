@@ -1,4 +1,3 @@
 ./build
-src/secrets.h
 src/secrets.cpp
 .DS_Store

@@ -3,10 +3,10 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/Users/alanuecker/Documents/Arduino/libraries/**",
-                "/Users/alanuecker/Library/Arduino15/packages/esp8266/tools/**",
-                "/Users/alanuecker/Library/Arduino15/packages/esp8266/hardware/esp8266/2.6.2/**"
+                "${workspaceFolder}/display/**",
+                "~/Documents/Arduino/libraries/**",
+                "~/Library/Arduino15/packages/esp8266/tools/**",
+                "~/Library/Arduino15/packages/esp8266/hardware/esp8266/2.6.2/**"
             ],
             "defines": [
                 "_DEBUG"
