@@ -8,31 +8,6 @@
 - Power Supply (mine provided 12V - 4A)
 - Jumper Cables (female-to-female)
 
-## Software:
-
-### Libraries
-
-#### Arduino Library Manager
-
-- [PxMatrix](https://github.com/2dom/PxMatrix) (by Dominic Buchstaller)
-- ArduinoJson (by Benoit Blanchon)
-- Adafruit GFX Library (by Adafruit)
-- NTPClient (by Fabrice Weinberg)
-
-#### External
-
-- WebSocketsServer (by [arduinoWebSockets](https://github.com/Links2004/arduinoWebSockets))
-  - install manually to `<home_dir>/Documents/Arduino/libraries/`
-
-### File System
-
-- setup `ESP8266 Sketch Data Upload` [docs](https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html#uploading-files-to-file-system)
-
-  - extract [ESP8266FS](https://github.com/esp8266/arduino-esp8266fs-plugin/releases/download/0.5.0/ESP8266FS-0.5.0.zip) to `<home_dir>/Documents/Arduino/tools/`
-  - reload `Arduino IDE`
-  - create a `data` folder
-  - select `Tools > ESP8266 Sketch Data Upload`
-
 ## Cabling:
 
 LED Matrix Model: `P4-256*128-2121-A2`
@@ -72,3 +47,35 @@ LED Matrix Model: `P4-256*128-2121-A2`
 | P_OE | D4      |
 | CLK  | D5      |
 | R1   | D7      |
+
+## Software:
+
+### Setup
+1. rename `secrets.cpp.template` to `secrets.cpp`
+2. enter your wifi information
+3. setup all relevant `Arduino Libraries`
+4. upload files to `ESP8266`
+5. upload the website via the `Arduino IDE`
+
+### Libraries
+
+#### Arduino Library Manager
+
+- [PxMatrix](https://github.com/2dom/PxMatrix) (by Dominic Buchstaller)
+- ArduinoJson (by Benoit Blanchon)
+- Adafruit GFX Library (by Adafruit)
+- NTPClient (by Fabrice Weinberg)
+
+#### External
+
+- WebSocketsServer (by [arduinoWebSockets](https://github.com/Links2004/arduinoWebSockets))
+  - install manually to `<home_dir>/Documents/Arduino/libraries/`
+
+### File System
+
+- setup `ESP8266 Sketch Data Upload` [docs](https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html#uploading-files-to-file-system)
+
+  - extract [ESP8266FS](https://github.com/esp8266/arduino-esp8266fs-plugin/releases/download/0.5.0/ESP8266FS-0.5.0.zip) to `<home_dir>/Documents/Arduino/tools/`
+  - reload `Arduino IDE`
+  - create a `data` folder
+  - select `Tools > ESP8266 Sketch Data Upload`

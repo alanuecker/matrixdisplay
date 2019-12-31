@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Helvetica"
+    />
+    <title>Matrix Display</title>
+
+    <style>
+      html,
+      body {
+        overscroll-behavior: none;
+      }
+
+      body {
+        text-align: center;
+        font-family: Arial;
+        text-transform: uppercase;
+        background-color: #ececec;
+        margin: 0.5rem;
+      }
+
+      * {
+        font-family: Arial;
+        color: grey;
+      }
+
+      table,
+      tr,
+      td {
+        border: silver 1px dotted;
+      }
+
+      #pixel-canvas {
+        background-color: white;
+      }
+
+      table {
+        width: 100%;
+        height: 100%;
+        border-collapse: collapse;
+      }
+
+      tr {
+        height: calc((100vw - 6rem) / 64);
+      }
+
+      td {
+        min-width: calc((100vw - 6rem) / 64);
+        box-sizing: border-box;
+      }
+
+      .button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0px 1px 0 0 #fff;
+        background: linear-gradient(#f9f9f9 5%, #e9e9e9 100%);
+        border-radius: 4px;
+        border: 1px solid #dcdcdc;
+        text-decoration: none;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 0.5rem;
+        min-width: 4rem;
+      }
+
+      .inputs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 1rem 1rem;
+        text-align: left;
+      }
+
+      .inputs > * {
+        margin-right: 1rem;
+      }
+
+      #color-picker {
+        display: flex;
+        border: 1px solid #dcdcdc;
+        -webkit-appearance: none;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+      }
+
+      #color-picker::-webkit-color-swatch {
+        border: none;
+        border-radius: 50%;
+        padding: 0;
+      }
+      #color-picker::-webkit-color-swatch-wrapper {
+        border: none;
+        border-radius: 50%;
+        padding: 0;
+      }
+
+      .row {
+        display: flex;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="row">
+      <div class="inputs">
+        <input type="color" id="color-picker" value="#6aa5b8" />
+        <input type="button" id="quick-fill" class="button" value="fill" />
+        <input type="button" id="quick-clear" class="button" value="clear" />
+        <input
+          type="button"
+          id="erase-mode"
+          class="button"
+          value="erase"
+          onclick="onClickErase()"
+        />
+        <input
+          type="button"
+          id="draw-mode"
+          class="button"
+          value="draw"
+          onclick="onClickDraw()"
+        />
+      </div>
+    </div>
+    <div class="row">
+      <div class="inputs">
+        <input
+          type="button"
+          id="brush-minus"
+          class="button"
+          value="-"
+          onclick="onClickMinus()"
+        />
+        <div id="brush-size">1</div>
+        <input
+          type="button"
+          id="brush-plus"
+          class="button"
+          value="+"
+          onclick="onClickPlus()"
+        />
+      </div>
+    </div>
+    <div class="row">
+      <table id="pixel-canvas"></table>
+      <br />
+    </div>
+    <script>
+      let eraseMode = false;
+      const black = "#000000";
+      let brushSize = 1;
+      let connection;
+
+      try {
+        connection = new WebSocket("ws://" + location.hostname + ":81/", [
+          "arduino"
+        ]);
+        connection.onopen = () => {
+          connection.send("Connect " + new Date());
+        };
+        connection.onerror = error => {
+          console.log("WebSocket Error ", error);
+        };
+        connection.onmessage = e => {
+          console.log("Server: ", e.data);
+        };
+        connection.onclose = () => {
+          console.log("WebSocket connection closed");
+        };
+      } catch (error) {}
+
+      const sendPixel = (x, y, value) => {
+        const data = { x, y };
+        const color = value.match(/[A-Za-z0-9]{2}/g).map(v => parseInt(v, 16));
+        data.r = color[0];
+        data.g = color[1];
+        data.b = color[2];
+        if (connection.readyState === WebSocket.OPEN)
+          connection.send(JSON.stringify(data));
+      };
+
+      const drawPixel = (m1, m2, value) => {
+        sendPixel(m1, m2, value);
+        if (brushSize > 1) {
+          const radius = Math.floor(brushSize / 2);
+          for (let x = -radius; x <= radius; x++) {
+            for (let y = -radius; y <= radius; y++) {
+              const distance = Math.sqrt(x * x + y * y);
+              if (distance <= radius) {
+                const xPos = parseInt(m1, 10) + x;
+                const yPos = parseInt(m2, 10) + y;
+                const target = document.querySelectorAll(
+                  `[data-x="${xPos}"][data-y="${yPos}"]`
+                )[0];
+
+                if (target) {
+                  target.style.backgroundColor = value;
+                  sendPixel(xPos, yPos, value);
+                }
+              }
+            }
+          }
+        }
+      };
+
+      const pixelCanvas = document.querySelector("#pixel-canvas");
+      const quickFill = document.querySelector("#quick-fill");
+      const quickClear = document.querySelector("#quick-clear");
+      const brushSizeText = document.querySelector("#brush-size");
+
+      const onClickMinus = () => {
+        brushSize -= 2;
+        if (brushSize < 1) brushSize = 1;
+        brushSizeText.innerHTML = brushSize;
+      };
+
+      const onClickPlus = () => {
+        brushSize += 2;
+        if (brushSize > 24) brushSize = 64;
+        brushSizeText.innerHTML = brushSize;
+      };
+
+      const onClickErase = () => {
+        eraseMode = true;
+      };
+
+      const onClickDraw = () => {
+        eraseMode = false;
+      };
+
+      const makeGrid = (gridWidth, gridHeight) => {
+        while (pixelCanvas.firstChild) {
+          pixelCanvas.removeChild(pixelCanvas.firstChild);
+        }
+        for (let i = 0; i < gridHeight; i++) {
+          let gridRow = document.createElement("tr");
+          pixelCanvas.appendChild(gridRow);
+          for (let j = 0; j < gridWidth; j++) {
+            const gridCell = document.createElement("td");
+            gridCell.dataset.x = j;
+            gridCell.dataset.y = i;
+            gridCell.style.backgroundColor = black;
+            gridRow.appendChild(gridCell);
+            gridCell.addEventListener("mousedown", function() {
+              const color = eraseMode
+                ? black
+                : document.querySelector("#color-picker").value;
+              this.style.backgroundColor = color;
+              drawPixel(this.dataset.x, this.dataset.y, color);
+            });
+          }
+        }
+      };
+
+      let mouseDown = false;
+      let touchDown = false;
+
+      pixelCanvas.addEventListener("mousedown", () => {
+        mouseDown = true;
+      });
+      pixelCanvas.addEventListener("mouseup", () => {
+        mouseDown = false;
+      });
+      pixelCanvas.addEventListener("mouseleave", () => {
+        mouseDown = false;
+      });
+      pixelCanvas.addEventListener("mouseover", e => {
+        if (mouseDown && e.target.tagName === "TD") {
+          const color = eraseMode
+            ? black
+            : document.querySelector("#color-picker").value;
+
+          e.target.style.backgroundColor = color;
+          const { x, y } = e.target.dataset;
+          drawPixel(x, y, color);
+        }
+      });
+      pixelCanvas.addEventListener("dblclick", e => {
+        const color = black;
+        e.target.style.backgroundColor = color;
+        const { x, y } = e.target.dataset;
+        drawPixel(x, y, color);
+      });
+
+      pixelCanvas.addEventListener("touchstart", () => {
+        touchDown = true;
+      });
+      pixelCanvas.addEventListener("touchend", () => {
+        touchDown = false;
+      });
+      pixelCanvas.addEventListener("mousecancel", () => {
+        touchDown = false;
+      });
+      pixelCanvas.addEventListener("touchmove", e => {
+        const xPos = e.touches[0].pageX;
+        const yPos = e.touches[0].pageY;
+        const { x } = pixelCanvas.getBoundingClientRect();
+        const target = document.elementFromPoint(xPos - x, yPos);
+
+        if (touchDown && target.tagName === "TD") {
+          const color = eraseMode
+            ? black
+            : document.querySelector("#color-picker").value;
+
+          target.style.backgroundColor = color;
+          const { x, y } = target.dataset;
+          drawPixel(x, y, color);
+        }
+      });
+
+      quickFill.addEventListener("click", e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const color = document.querySelector("#color-picker").value;
+        pixelCanvas.querySelectorAll("td").forEach(td => {
+          td.style.backgroundColor = color;
+          const { x, y } = td.dataset;
+          sendPixel(x, y, color);
+        });
+      });
+      quickClear.addEventListener("click", e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const color = black;
+        pixelCanvas.querySelectorAll("td").forEach(td => {
+          td.style.backgroundColor = color;
+          const { x, y } = td.dataset;
+          sendPixel(x, y, color);
+        });
+      });
+
+      window.onload = () => {
+        makeGrid(64, 32);
+      };
+    </script>
+  </body>
+</html>

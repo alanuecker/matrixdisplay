@@ -100,11 +100,11 @@ bool handleFileRead(String path)
   if (path.endsWith("/"))
     path += "index.html";
 
-  // check if there is a zipped file with the same name or use the normal one
-  path += SPIFFS.exists(path + ".gz") ? ".gz" : "";
-  // check if the file exists
-  if (SPIFFS.exists(path))
+  String pathWithGz = path + ".gz";
+  if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path))
   {
+    if (SPIFFS.exists(pathWithGz))
+      path += ".gz";
     // open the file
     File file = SPIFFS.open(path, "r");
     // provide the file to the client

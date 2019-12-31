@@ -1,0 +1,20 @@
+{
+  "name": "ledmatrix",
+  "version": "0.1.0",
+  "description": "basic website to controll the led matrix",
+  "main": "index.html",
+  "repository": "https://github.com/alanuecker/matrixdisplay",
+  "author": "Alan Uecker (uecker.alan@gmail.com)",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "minify": "html-minifier-terser --collapse-whitespace --remove-comments --remove-optional-tags --remove-redundant-attributes --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype --minify-css true --minify-js true index.html -o ./build/index.html",
+    "watch": "./node_modules/.bin/live-server .",
+    "build": "npm run minify && cd ../display/data && cp ../../website/build/index.html . && gzip -f index.html",
+    "copy": "cd ../display/data && cp ../../website/index.html ."
+  },
+  "dependencies": {
+    "html-minifier-terser": "^5.0.2",
+    "live-server": "^1.2.1"
+  }
+}

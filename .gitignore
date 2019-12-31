@@ -1,3 +1,5 @@
 ./build
 src/secrets.cpp
 .DS_Store
+website/build/*
+node_modules
