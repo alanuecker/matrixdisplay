@@ -50,12 +50,18 @@ LED Matrix Model: `P4-256*128-2121-A2`
 
 ## Software:
 
-### Setup
+### Setup Arduino
 1. rename `secrets.cpp.template` to `secrets.cpp`
 2. enter your wifi information
 3. setup all relevant `Arduino Libraries`
 4. upload files to `ESP8266`
 5. upload the website via the `Arduino IDE`
+
+### Setup Website Development
+1. run `yarn`
+2. run `yarn watch` for local development
+3. run `yarn build` to minify and gzip the html file
+4. upload the website via the `Arduino IDE`
 
 ### Libraries
 

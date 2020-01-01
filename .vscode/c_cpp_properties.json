@@ -6,7 +6,9 @@
                 "${workspaceFolder}/display/**",
                 "~/Documents/Arduino/libraries/**",
                 "~/Library/Arduino15/packages/esp8266/tools/**",
-                "~/Library/Arduino15/packages/esp8266/hardware/esp8266/2.6.2/**"
+                "~/Library/Arduino15/packages/esp8266/hardware/esp8266/2.6.2/**",
+                "/Users/alanuecker/Library/Arduino15/packages/esp8266/hardware/esp8266/2.6.2/**",
+                "/Users/alanuecker/Library/Arduino15/packages/esp8266/tools/**"
             ],
             "defines": [
                 "_DEBUG"

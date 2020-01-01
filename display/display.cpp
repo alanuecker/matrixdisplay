@@ -38,7 +38,7 @@ void display_updater()
 {
   // This defines the 'on' time of the display is us. The larger this number,
   // the brighter the display. If too large the ESP will crash
-  display.display(10);
+  display.display(20);
 }
 
 // set display settings

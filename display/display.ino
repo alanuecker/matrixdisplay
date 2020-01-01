@@ -54,8 +54,4 @@ void loop()
     drawClock(timeClient.getHours(), timeClient.getMinutes());
     delay(500);
   }
-  else
-  {
-    delay(10);
-  }
 }
